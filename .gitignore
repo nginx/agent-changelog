@@ -9,4 +9,4 @@
 .pytest_cache
 __pycache__
 .vscode/*
-*.md
+changelog.md
