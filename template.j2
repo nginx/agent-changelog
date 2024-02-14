@@ -1,0 +1,77 @@
+---
+title: "Changelog"
+weight: 1200
+toc: true
+docs: "DOCS-1093"
+---
+{% raw %}
+{{< note >}}You can find the full changelog, contributor list and assets for NGINX Agent in the [GitHub repository](https://github.com/nginx/agent/releases).{{< /note >}}
+
+See the list of supported Operating Systems and architectures in the [Technical Specifications]({{< relref "./technical-specifications.md" >}}).
+{% endraw %}
+---
+{% if all_changes is iterable %}{% for change in all_changes %}## Release [{{ change['release_version'] }}](https//github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
+{% if change['changes']['🚀 Features'] %}
+### 🚀 Features
+{% for feature in change['changes']['🚀 Features'] %}- {{ feature }}{% endfor %}{% endif %}
+{% if change['changes']['🐛 Bug Fixes'] %}
+### 🐛 Bug Fixes
+{% for fix in change['changes']['🐛 Bug Fixes'] %}
+- {{ fix }}
+{% endfor %}
+{% endif %}
+{% if change['changes']['📝 Documentation'] %}
+### 📝 Documentation
+{% for doc in change['changes']['📝 Documentation'] %}
+- {{ doc }}
+{% endfor %}
+{% endif %}
+{% if change['changes']['⬇️ Dependencies'] %}
+### ⬇️ Dependencies
+{% for dep in change['changes']['⬆️ Dependencies'] %}
+- {{ dep }}
+{% endfor %}
+{% endif %}
+{% if change['changes']['🔨 Maintenance'] %}
+### 🔨 Maintenance
+{% for maint in change['changes']['🔨 Maintenance'] %}
+- {{ maint }}
+{% endfor %}
+{% endif %}
+---
+{% endfor %}
+{% else %}
+{% if all_changes %}
+# Release [{{ change['release_version'] }}](https//github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
+{% if change['changes']['🚀 Features'] %}
+### 🚀 Features
+{% for feature in change['changes']['🚀 Features'] %}
+- {{ feature }}
+{% endfor %}
+{% endif %}
+{% if change['changes']['🐛 Bug Fixes'] %}
+### 🐛 Bug Fixes
+{% for fix in change['changes']['🐛 Bug Fixes'] %}
+- {{ fix }}
+{% endfor %}
+{% endif %}
+{% if change['changes']['📝 Documentation'] %}
+### 📝 Documentation
+{% for doc in change['changes']['📝 Documentation'] %}
+- {{ doc }}
+{% endfor %}
+{% endif %}
+{% if change['changes']['⬇️ Dependencies'] %}
+### ⬇️ Dependencies
+{% for dep in change['changes']['⬆️ Dependencies'] %}
+- {{ dep }}
+{% endfor %}
+{% endif %}
+{% if change['changes']['🔨 Maintenance'] %}
+### 🔨 Maintenance
+{% for maint in change['changes']['🔨 Maintenance'] %}
+- {{ maint }}
+{% endfor %}
+{% endif %}
+{% endif %}
+{% endif %}

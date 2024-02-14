@@ -1,0 +1,12 @@
+.DS_Store
+*.pyc
+*.pyo
+*.log
+*.idea
+*.swp
+.cache/*
+.cache
+.pytest_cache
+__pycache__
+.vscode/*
+*.md
