@@ -11,33 +11,42 @@ See the list of supported Operating Systems and architectures in the [Technical 
 {% endraw %}
 ---
 {% if all_changes is iterable %}{% for change in all_changes %}## Release [{{ change['release_version'] }}](https//github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
+{% if change['changes']['🌟 Highlights'] %}
+### 🌟 Highlights
+{% for highlight in change['changes']['🌟 Highlights'] %}
+- {{ highlight }}
+{% endfor %}
+{% endif %}
 {% if change['changes']['🚀 Features'] %}
 ### 🚀 Features
+
+This release introduces the following new features:
+
 {% for feature in change['changes']['🚀 Features'] %}- {{ feature }}{% endfor %}{% endif %}
 {% if change['changes']['🐛 Bug Fixes'] %}
 ### 🐛 Bug Fixes
-{% for fix in change['changes']['🐛 Bug Fixes'] %}
-- {{ fix }}
-{% endfor %}
-{% endif %}
+
+In this release we have resolved the following issues:
+
+{% for fix in change['changes']['🐛 Bug Fixes'] %}- {{ fix }}{% endfor %}{% endif %}
 {% if change['changes']['📝 Documentation'] %}
 ### 📝 Documentation
-{% for doc in change['changes']['📝 Documentation'] %}
-- {{ doc }}
-{% endfor %}
-{% endif %}
+
+We have made the following updates to the documentation:
+
+{% for doc in change['changes']['📝 Documentation'] %}- {{ doc }}{% endfor %}{% endif %}
 {% if change['changes']['⬇️ Dependencies'] %}
 ### ⬇️ Dependencies
-{% for dep in change['changes']['⬆️ Dependencies'] %}
-- {{ dep }}
-{% endfor %}
-{% endif %}
+
+We have introduced the following changes to the dependencies:
+
+{% for dep in change['changes']['⬆️ Dependencies'] %}- {{ dep }}{% endfor %}{% endif %}
 {% if change['changes']['🔨 Maintenance'] %}
 ### 🔨 Maintenance
-{% for maint in change['changes']['🔨 Maintenance'] %}
-- {{ maint }}
-{% endfor %}
-{% endif %}
+
+We have made the following maintenance-related minor changes:
+
+{% for maint in change['changes']['🔨 Maintenance'] %}- {{ maint }}{% endfor %}{% endif %}
 ---
 {% endfor %}
 {% else %}
@@ -45,30 +54,45 @@ See the list of supported Operating Systems and architectures in the [Technical 
 # Release [{{ change['release_version'] }}](https//github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
 {% if change['changes']['🚀 Features'] %}
 ### 🚀 Features
+
+This release introduces the following new features:
+
 {% for feature in change['changes']['🚀 Features'] %}
 - {{ feature }}
 {% endfor %}
 {% endif %}
 {% if change['changes']['🐛 Bug Fixes'] %}
 ### 🐛 Bug Fixes
+
+In this release we have resolved the following issues:
+
 {% for fix in change['changes']['🐛 Bug Fixes'] %}
 - {{ fix }}
 {% endfor %}
 {% endif %}
 {% if change['changes']['📝 Documentation'] %}
 ### 📝 Documentation
+
+We have made the following updates to the documentation:
+
 {% for doc in change['changes']['📝 Documentation'] %}
 - {{ doc }}
 {% endfor %}
 {% endif %}
 {% if change['changes']['⬇️ Dependencies'] %}
 ### ⬇️ Dependencies
+
+We have introduced the following changes to the dependencies:
+
 {% for dep in change['changes']['⬆️ Dependencies'] %}
 - {{ dep }}
 {% endfor %}
 {% endif %}
 {% if change['changes']['🔨 Maintenance'] %}
 ### 🔨 Maintenance
+
+We have made the following maintenance-related minor changes:
+
 {% for maint in change['changes']['🔨 Maintenance'] %}
 - {{ maint }}
 {% endfor %}

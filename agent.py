@@ -45,7 +45,7 @@ def parse_html(content, url):
             changes = {}  # Dictionary to store different types of changes
             for h3 in changes_section.find_all_next('h3'):
                 label = h3.text.strip()  # Extracting label for changes
-                if label in ['🚀 Features', '🐛 Bug Fixes', '📝 Documentation', '⬆️ Dependencies', '🔨 Maintenance']:
+                if label in ['🌟 Highlights', '🚀 Features', '🐛 Bug Fixes', '📝 Documentation', '⬆️ Dependencies', '🔨 Maintenance']:
                     ul = h3.find_next_sibling('ul')  # Finding unordered list of changes
                     if ul:
                         changes[label] = [convert_links(li) for li in ul.find_all('li')]
