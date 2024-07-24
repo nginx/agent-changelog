@@ -5,12 +5,12 @@ toc: true
 docs: "DOCS-1093"
 ---
 {% raw %}
-{{< note >}}You can find the full changelog, contributor list and assets for NGINX Agent in the [GitHub repository](https://github.com/nginx/agent/releases).{{< /note >}}
+{{< note >}}You can find the full changelog, contributor list and assets for NGINX Agent in the [GitHub repository](https://github.com/spencerugbo/changelog-test/releases).{{< /note >}}
 
 See the list of supported Operating Systems and architectures in the [Technical Specifications]({{< relref "./technical-specifications.md" >}}).
 {% endraw %}
 ---
-{% if all_changes is iterable %}{% for change in all_changes %}## Release [{{ change['release_version'] }}](https//github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
+{% if all_changes is iterable %}{% for change in all_changes %}## Release [{{ change['release_version'] }}](https//github.com/spencerugbo/changelog-test/releases/tag/{{ change['release_version'] }})
 {% if change['changes']['🌟 Highlights'] %}
 ### 🌟 Highlights
 {% for highlight in change['changes']['🌟 Highlights'] %}
@@ -56,7 +56,7 @@ We have made the following maintenance-related minor changes:
 {% endfor %}
 {% else %}
 {% if all_changes %}
-# Release [{{ change['release_version'] }}](https//github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
+# Release [{{ change['release_version'] }}](https//github.com/spencerugbo/changelog-test/releases/tag/{{ change['release_version'] }})
 {% if change['changes']['🌟 Highlights'] %}
 ### 🌟 Highlights
 {% for highlight in change['changes']['🌟 Highlights'] %}

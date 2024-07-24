@@ -16,7 +16,7 @@ def get_url_content(url):
 def parse_html(content, url):
     """Function to parse HTML content"""
     soup = BeautifulSoup(content, 'html.parser')  # Parsing HTML content using BeautifulSoup
-    if url == 'https://github.com/nginx/agent/releases/':
+    if url == 'https://github.com/spencerugbo/changelog-test/releases/':
         # Parsing releases page of nginx/agent repository on GitHub
         releases = soup.find_all('a', class_='Link--primary')  # Finding all release links
         all_changes = []  # List to store all changes
@@ -101,11 +101,11 @@ def remove_extra_lines(file_path):
 def main():
     """Main function to handle command-line arguments and generate changelog"""
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('-u', '--url', type=str, default='https://github.com/nginx/agent/releases/', help='URL to fetch content from')
+    parser.add_argument('-u', '--url', type=str, default='https://github.com/spencerugbo/changelog-test/releases/', help='URL to fetch content from')
     args = parser.parse_args()  # Parsing command-line arguments
     url_content = get_url_content(args.url)  # Fetching content from the specified URL
     if url_content:
-        if args.url == 'https://github.com/nginx/agent/releases/':
+        if args.url == 'https://github.com/spencerugbo/changelog-test/releases/':
             all_changes = parse_html(url_content, args.url)  # Parsing releases page
         else:
             release_version, changes = parse_html(url_content, args.url)  # Parsing individual release page
