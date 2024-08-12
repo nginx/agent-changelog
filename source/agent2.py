@@ -4,6 +4,7 @@ from jinja2 import Template  # Importing Template from jinja2 for template rende
 import argparse  # Importing argparse for command-line argument parsing
 import re  # Importing re module for regular expressions
 import os # Importing os module to retrieve github token for draft release
+import json
 
 def get_draft_releases():
     token = os.getenv('GITHUB_TOKEN')
@@ -17,21 +18,65 @@ def get_draft_releases():
         response = requests.get(url, headers=headers)
 
         if response.status_code == 200:
-            releases = response.json()
+        
             all_changes = []
+            releases = response.json()
             for release in releases:
                 release_version = release['tag_name']
                 if release_version:
-                    changes = release['body']
-                    if changes:
+                    changes_section = release['body']
+                    if changes_section:
+                        changes = {}
+                        changelog = parse_release_notes(changes_section)
+                        for heading, content in changelog.items():
+                            if content:
+                                changes[heading] = content
                         all_changes.append({'release_version': release_version, 'changes': changes})
 
             return all_changes
+
         else:
             print(f"Failed to get releases: {response.status_code}")
             print(response.json())
     else:
         print("GitHub token not found, cannot access repository")
+        
+
+def parse_release_notes(release_notes):
+    headings = ['🌟 Highlights', '🚀 Features', '🐛 Bug Fixes', '📝 Documentation', '⬆️ Dependencies', '🔨 Maintenance']
+
+    changelog = {heading: [] for heading in headings}
+    
+    # Create a pattern to match the labels
+    pattern = r"(### ({}))\r?\n((?:\*.*(?:\r?\n|$))+)"
+    regex_pattern = pattern.format('|'.join(re.escape(heading) for heading in headings))
+    
+    matches = re.findall(regex_pattern, release_notes)
+    
+    for match in matches:
+        heading, _, content = match
+        heading = heading.replace('### ', '')
+        changes = content.strip().splitlines()
+        changelog[heading].extend([convert_links(re.sub(r'^\*\s*', '', change.strip())) for change in changes])
+
+    changelog = {k: v for k, v in changelog.items() if v}
+    
+    return changelog
+
+def convert_links(change):
+    usernames = re.findall(r'@(\w+)', change)
+
+    for username in usernames:
+        change = change.replace(f'@{username}', f'[@{username}](https://github.com/{username})')
+
+    pr_link_match = re.search(r'https://github.com/([\w-]+)/([\w-]+)/pull/(\d+)', change)
+    if pr_link_match:
+        repo_name = pr_link_match.group(2)
+        pr_number = pr_link_match.group(3)
+        pr_link = pr_link_match.group(0)
+        change = change.replace(pr_link, f'[{repo_name}#{pr_number}]({pr_link})')
+    
+    return change
 
 def remove_extra_blank_lines(file_path):
     """Function to remove extra blank lines from a file"""
