@@ -4,7 +4,6 @@ from jinja2 import Template  # Importing Template from jinja2 for template rende
 import argparse  # Importing argparse for command-line argument parsing
 import re  # Importing re module for regular expressions
 import os # Importing os module to retrieve github token for draft release
-import json
 
 def get_draft_releases():
     token = os.getenv('GITHUB_TOKEN')
@@ -47,7 +46,6 @@ def parse_release_notes(release_notes):
 
     changelog = {heading: [] for heading in headings}
     
-    # Create a pattern to match the labels
     pattern = r"(### ({}))\r?\n((?:\*.*(?:\r?\n|$))+)"
     regex_pattern = pattern.format('|'.join(re.escape(heading) for heading in headings))
     
