@@ -5,14 +5,13 @@ import argparse  # Importing argparse for command-line argument parsing
 import re  # Importing re module for regular expressions
 import os # Importing os module to retrieve github token for draft release
 
-def get_draft_releases():
+def get_changes_from_releases(repo):
     token = os.getenv('GITHUB_TOKEN')
     if token:
         headers = {
             'Authorization': f'token {token}',
             'Accept': 'application/vnd.github.v3+json'
         }
-        repo = 'spencerugbo/changelog-test'
         url = f'https://api.github.com/repos/{repo}/releases'
         response = requests.get(url, headers=headers)
 
@@ -110,9 +109,9 @@ def remove_extra_lines(file_path):
 def main():
     """Main function to handle command-line arguments and generate changelog"""
     parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('-r', '--repo', type=str, default='changelog-test', help='Repository to fetch content from')
-    # args = parser.parse_args()  # Parsing command-line arguments
-    all_changes = get_draft_releases()  # Parsing releases page
+    parser.add_argument('-r', '--repo', type=str, default='nginx/agent', help='Repository to fetch content from')
+    args = parser.parse_args()  # Parsing command-line arguments
+    all_changes = get_changes_from_releases(args.repo)  # Parsing releases page
     if all_changes:
         template = Template(open('template.j2').read())  # Loading template for rendering
         output = template.render(all_changes=all_changes)  # Rendering template with changes data
