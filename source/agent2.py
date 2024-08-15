@@ -20,8 +20,10 @@ def get_changes_from_releases(repo):
             all_changes = []
             releases = response.json()
             num_of_releases_in_changelog = 10
-            while len(all_changes) <= num_of_releases_in_changelog:
-                for release in releases:
+            for release in releases:
+                if len(all_changes) >= num_of_releases_in_changelog:
+                    break
+                else:
                     release_version = release['tag_name']
                     if release_version:
                         changes_section = release['body']
