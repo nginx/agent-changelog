@@ -19,17 +19,19 @@ def get_changes_from_releases(repo):
         
             all_changes = []
             releases = response.json()
-            for release in releases:
-                release_version = release['tag_name']
-                if release_version:
-                    changes_section = release['body']
-                    if changes_section:
-                        changes = {}
-                        changelog = parse_release_notes(changes_section)
-                        for heading, content in changelog.items():
-                            if content:
-                                changes[heading] = content
-                        all_changes.append({'release_version': release_version, 'changes': changes})
+            num_of_releases_in_changelog = 10
+            while len(all_changes) <= num_of_releases_in_changelog:
+                for release in releases:
+                    release_version = release['tag_name']
+                    if release_version:
+                        changes_section = release['body']
+                        if changes_section:
+                            changes = {}
+                            changelog = parse_release_notes(changes_section)
+                            for heading, content in changelog.items():
+                                if content:
+                                    changes[heading] = content
+                            all_changes.append({'release_version': release_version, 'changes': changes})
 
             return all_changes
 
