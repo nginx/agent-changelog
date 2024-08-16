@@ -15,6 +15,10 @@ The `template.j2` file is the Jinja2 template used to generate the Hugo content.
 2. Install the required dependencies: `pip install -r requirements.txt`
 
 ## Usage
+Run this script within a GitHub Actions workflow to generate a changelog. 
+
+Make sure to define the GitHub token as an environment variable.
+
 To run the script, use the following command:
 
 `python agent.py`
