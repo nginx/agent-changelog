@@ -65,7 +65,7 @@ def parse_release_notes(release_notes):
     return changelog
 
 def convert_links(change):
-    usernames = re.findall(r'@(\w+)', change)
+    usernames = re.findall(r'@([a-zA-Z0-9-]+)', change)
 
     for username in usernames:
         change = change.replace(f'@{username}', f'[@{username}](https://github.com/{username})')
