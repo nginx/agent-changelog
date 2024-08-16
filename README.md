@@ -19,15 +19,7 @@ To run the script, use the following command:
 
 `python agent.py`
 
-The script will generate the `changelog.md` file in the same folder as the script.
-
-If you want to generate the changelog for a single release use the -u flag with the release URL:
-
-`python agent.py -u https://github.com/nginx/agent/releases/tag/v2.31.0`
-
-or the latest release url:
-
-`python agent.py -u https://github.com/nginx/agent/releases/latest/`
+The script will generate the `changelog.md` file in the same folder as the script containing the changes from the last 10 releases.
 
 The genrated `changelog.md` can be copied directly to the `/site/content/` folder in the [NGINX Agent repository](https://github.com/nginx/agent/tree/main/site/content).
 

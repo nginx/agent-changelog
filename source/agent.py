@@ -1,71 +1,82 @@
 import requests  # Importing requests library to make HTTP requests
-from bs4 import BeautifulSoup  # Importing BeautifulSoup library to parse HTML content
 from jinja2 import Template  # Importing Template from jinja2 for template rendering
-import argparse  # Importing argparse for command-line argument parsing
 import re  # Importing re module for regular expressions
+import os # Importing os module to retrieve github token for draft release
 
-def get_url_content(url):
-    """Function to fetch content from a given URL"""
-    response = requests.get(url)  # Sending HTTP GET request to the URL
-    if response.status_code == 200:  # Checking if request was successful
-        return response.content  # Returning the content if successful
+def get_changes_from_releases():
+    token = os.getenv('GITHUB_TOKEN')
+    if token:
+        headers = {
+            'Authorization': f'token {token}',
+            'Accept': 'application/vnd.github.v3+json'
+        }
+        url = f'https://api.github.com/repos/nginx/agent/releases'
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+        
+            all_changes = []
+            releases = response.json()
+            num_of_releases_in_changelog = 10
+            for release in releases:
+                if len(all_changes) >= num_of_releases_in_changelog:
+                    break
+                else:
+                    release_version = release['tag_name']
+                    tag_regex = r"^v\d+\.\d+\.\d+$"
+                    if re.match(tag_regex, release_version):
+                        changes_section = release['body']
+                        if changes_section:
+                            changes = {}
+                            changelog = parse_release_notes(changes_section)
+                            for heading, content in changelog.items():
+                                if content:
+                                    changes[heading] = content
+                            all_changes.append({'release_version': release_version, 'changes': changes})
+
+            return all_changes
+
+        else:
+            print(f"Failed to get releases: {response.status_code}")
+            print(response.json())
     else:
-        print("Failed to fetch URL content")  # Printing error message if request fails
-        return None
+        print("GitHub token not found, cannot access repository")
+        
 
-def parse_html(content, url):
-    """Function to parse HTML content"""
-    soup = BeautifulSoup(content, 'html.parser')  # Parsing HTML content using BeautifulSoup
-    if url == 'https://github.com/nginx/agent/releases/':
-        # Parsing releases page of nginx/agent repository on GitHub
-        releases = soup.find_all('a', class_='Link--primary')  # Finding all release links
-        all_changes = []  # List to store all changes
-        for release in releases:
-            release_version = release.text.strip()  # Getting the text of release version
-            if re.match(r'^v\d+(\.\d+)*$', release_version):
-                # Checking if the text matches the release version format
-                release_url = 'https://github.com' + release['href']  # Building release URL
-                release_content = get_url_content(release_url)  # Fetching release content
-                if release_content:
-                    _, changes = parse_html(release_content, '')  # Recursive call to parse release content
-                    if changes:
-                        all_changes.append({'release_version': release_version, 'changes': changes})
-        return all_changes  # Returning all changes
-    else:
-        # Parsing individual release pages
-        release_version_tag = soup.find('h1', string=re.compile(r'^v\d+(\.\d+)*'))
-        # Finding release version tag
-        if release_version_tag:
-            release_version = release_version_tag.text.strip()  # Extracting release version
-        else:
-            return None  # Returning None if release version is not found
-        changes_section = soup.find('h2', string="What's Changed")
-        # Finding the section containing changes
-        if changes_section:
-            changes = {}  # Dictionary to store different types of changes
-            for h3 in changes_section.find_all_next('h3'):
-                label = h3.text.strip()  # Extracting label for changes
-                if label in ['🌟 Highlights', '🚀 Features', '🐛 Bug Fixes', '📝 Documentation', '⬆️ Dependencies', '🔨 Maintenance']:
-                    ul = h3.find_next_sibling('ul')  # Finding unordered list of changes
-                    if ul:
-                        changes[label] = [convert_links(li) for li in ul.find_all('li')]
-                        # Converting links in list items and storing them in dictionary
-            return release_version, changes  # Returning release version and changes
-        else:
-            return None, None  # Returning None if changes section is not found
+def parse_release_notes(release_notes):
+    headings = ['🌟 Highlights', '🚀 Features', '🐛 Bug Fixes', '📝 Documentation', '⬆️ Dependencies', '🔨 Maintenance']
 
-def convert_links(li):
-    """Function to convert links in list items"""
-    new_text = ""  # String to store modified text
-    for elem in li.contents:
-        if elem.name == 'a':
-            href = elem.get('href')  # Extracting URL from link
-            text = elem.text  # Extracting link text
-            if href and text:
-                new_text += f'[{text}]({href})'  # Formatting link in markdown format
-        else:
-            new_text += str(elem)  # Appending non-link text as it is
-    return new_text.strip()  # Returning modified text
+    changelog = {heading: [] for heading in headings}
+    
+    pattern = r"(### ({}))\r?\n((?:\*.*(?:\r?\n|$))+)"
+    regex_pattern = pattern.format('|'.join(re.escape(heading) for heading in headings))
+    
+    matches = re.findall(regex_pattern, release_notes)
+    
+    for match in matches:
+        heading, _, content = match
+        heading = heading.replace('### ', '')
+        changes = content.strip().splitlines()
+        changelog[heading].extend([convert_links(re.sub(r'^\*\s*', '', change.strip())) for change in changes])
+
+    changelog = {k: v for k, v in changelog.items() if v}
+    
+    return changelog
+
+def convert_links(change):
+    usernames = re.findall(r'@([a-zA-Z0-9-]+)', change)
+
+    for username in usernames:
+        change = change.replace(f'@{username}', f'[@{username}](https://github.com/{username})')
+
+    pr_link_match = re.search(r'https://github.com/([\w-]+)/([\w-]+)/pull/(\d+)', change)
+    if pr_link_match:
+        repo_name = pr_link_match.group(2)
+        pr_number = pr_link_match.group(3)
+        pr_link = pr_link_match.group(0)
+        change = change.replace(pr_link, f'[{repo_name}#{pr_number}]({pr_link})')
+    
+    return change
 
 def remove_extra_blank_lines(file_path):
     """Function to remove extra blank lines from a file"""
@@ -100,23 +111,14 @@ def remove_extra_lines(file_path):
 
 def main():
     """Main function to handle command-line arguments and generate changelog"""
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('-u', '--url', type=str, default='https://github.com/nginx/agent/releases/', help='URL to fetch content from')
-    args = parser.parse_args()  # Parsing command-line arguments
-    url_content = get_url_content(args.url)  # Fetching content from the specified URL
-    if url_content:
-        if args.url == 'https://github.com/nginx/agent/releases/':
-            all_changes = parse_html(url_content, args.url)  # Parsing releases page
-        else:
-            release_version, changes = parse_html(url_content, args.url)  # Parsing individual release page
-            all_changes = [{'release_version': release_version, 'changes': changes}]
-        if all_changes:
-            template = Template(open('template.j2').read())  # Loading template for rendering
-            output = template.render(all_changes=all_changes)  # Rendering template with changes data
-            with open('changelog.md', 'w') as f:
-                f.write(output)  # Writing rendered output to changelog file
-            remove_extra_blank_lines('changelog.md')  # Removing extra blank lines from changelog
-            remove_extra_lines('changelog.md')  # Removing extra lines from changelog
+    all_changes = get_changes_from_releases()  # Parsing releases page
+    if all_changes:
+        template = Template(open('template.j2').read())  # Loading template for rendering
+        output = template.render(all_changes=all_changes)  # Rendering template with changes data
+        with open('changelog.md', 'w') as f:
+            f.write(output)  # Writing rendered output to changelog file
+        remove_extra_blank_lines('changelog.md')  # Removing extra blank lines from changelog
+        remove_extra_lines('changelog.md')  # Removing extra lines from changelog
 
 if __name__ == "__main__":
     main()  # Calling main function if script is executed directly
