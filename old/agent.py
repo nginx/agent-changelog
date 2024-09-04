@@ -111,7 +111,7 @@ def main():
             release_version, changes = parse_html(url_content, args.url)  # Parsing individual release page
             all_changes = [{'release_version': release_version, 'changes': changes}]
         if all_changes:
-            template = Template(open('template.j2').read())  # Loading template for rendering
+            template = Template(open('../source/template.j2').read())  # Loading template for rendering
             output = template.render(all_changes=all_changes)  # Rendering template with changes data
             with open('changelog.md', 'w') as f:
                 f.write(output)  # Writing rendered output to changelog file
