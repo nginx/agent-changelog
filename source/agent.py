@@ -68,7 +68,7 @@ def convert_links(change):
     
     change = re.sub(
         r'https://github.com/[\w-]+/[\w-]+/pull/(\d+)',
-        r'[#\1](\0)',
+        r'[#\1](\g<0>)',
         change
     )
     
