@@ -10,7 +10,7 @@ docs: "DOCS-1093"
 See the list of supported Operating Systems and architectures in the [Technical Specifications]({{< relref "./technical-specifications.md" >}}).
 {% endraw %}
 ---
-{% if all_changes is iterable %}{% for change in all_changes %}## Release [{{ change['release_version'] }}](https//github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
+{% if all_changes is iterable %}{% for change in all_changes %}## Release [{{ change['release_version'] }}](https://github.com/nginx/agent/releases/tag/{{ change['release_version'] }})
 {% if change['changes']['🌟 Highlights'] %}
 ### 🌟 Highlights
 {% for highlight in change['changes']['🌟 Highlights'] %}

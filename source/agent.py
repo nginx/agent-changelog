@@ -64,17 +64,13 @@ def parse_release_notes(release_notes):
     return changelog
 
 def convert_links(change):
-    usernames = re.findall(r'@([a-zA-Z0-9-]+)', change)
-
-    for username in usernames:
-        change = change.replace(f'@{username}', f'[@{username}](https://github.com/{username})')
-
-    pr_link_match = re.search(r'https://github.com/([\w-]+)/([\w-]+)/pull/(\d+)', change)
-    if pr_link_match:
-        repo_name = pr_link_match.group(2)
-        pr_number = pr_link_match.group(3)
-        pr_link = pr_link_match.group(0)
-        change = change.replace(pr_link, f'[{repo_name}#{pr_number}]({pr_link})')
+    change = re.sub(r'@([a-zA-Z0-9-]+)', r'[@\1](https://github.com/\1)', change)
+    
+    change = re.sub(
+        r'https://github.com/[\w-]+/[\w-]+/pull/(\d+)',
+        r'[#\1](\0)',
+        change
+    )
     
     return change
 
